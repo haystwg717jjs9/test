@@ -347,10 +347,4 @@ def save_previous_points_data(data):
 
 
 if __name__ == "__main__":
-    try:
         main()
-    except Exception as e:
-        logging.exception("")
-        Utils.sendNotification(
-            "⚠️ Error occurred, please check the log", f"{e}\n{e.__traceback__}"
-        )

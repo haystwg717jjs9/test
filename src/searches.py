@@ -118,7 +118,7 @@ class Searches:
             # todo Disable cooldown for first 3 searches (Earning starts with your third search)
             logging.info(f"[BING] {searchCount}/{remainingSearches}")
             self.bingSearch()
-            time.sleep(random.randint(10, 15))
+            time.sleep(random.randint(200, 300))
 
         logging.info(
             f"[BING] Finished {self.browser.browserType.capitalize()} Edge Bing searches !"

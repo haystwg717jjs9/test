@@ -1,4 +1,5 @@
 import argparse
+import atexit
 import csv
 import json
 import logging
@@ -27,6 +28,7 @@ from src.utils import Utils
 
 def main():
     args = argumentParser()
+    Utils.args = args
     setupLogging()
     loadedAccounts = setupAccounts()
     # Register the cleanup function to be called on script exit
@@ -115,6 +117,14 @@ def setupLogging():
         ],
     )
 
+def cleanupChromeProcesses():
+    # Use psutil to find and terminate Chrome processes
+    for process in psutil.process_iter(["pid", "name"]):
+        if process.info["name"] == "chrome.exe":
+            try:
+                psutil.Process(process.info["pid"]).terminate()
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                pass
 
 def argumentParser() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="MS Rewards Farmer")

@@ -11,6 +11,8 @@ import sys
 from datetime import datetime
 from enum import Enum, auto
 
+import psutil
+
 from src import (
     Browser,
     Login,

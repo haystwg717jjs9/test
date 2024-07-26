@@ -27,9 +27,10 @@ from src.utils import Utils
 
 def main():
     args = argumentParser()
-    Utils.args = args
     setupLogging()
     loadedAccounts = setupAccounts()
+    # Register the cleanup function to be called on script exit
+    atexit.register(cleanupChromeProcesses)
 
     # Load previous day's points data
     previous_points_data = load_previous_points_data()
@@ -37,27 +38,22 @@ def main():
     for currentAccount in loadedAccounts:
         try:
             earned_points = executeBot(currentAccount, args)
-        except Exception as e1:
-            logging.error("", exc_info=True)
-            Utils.sendNotification(
-                f"⚠️ Error executing {currentAccount.username}, please check the log",
-                f"{e1}\n{e1.__traceback__}",
-            )
-            continue
-        previous_points = previous_points_data.get(currentAccount.username, 0)
+            account_name = currentAccount.get("username", "")
+            previous_points = previous_points_data.get(account_name, 0)
 
-        # Calculate the difference in points from the prior day
-        points_difference = earned_points - previous_points
+            # Calculate the difference in points from the prior day
+            points_difference = earned_points - previous_points
 
-        # Append the daily points and points difference to CSV and Excel
-        log_daily_points_to_csv(earned_points, points_difference)
+            # Append the daily points and points difference to CSV and Excel
+            log_daily_points_to_csv(account_name, earned_points, points_difference)
 
-        # Update the previous day's points data
-        previous_points_data[currentAccount.username] = earned_points
+            # Update the previous day's points data
+            previous_points_data[account_name] = earned_points
 
-        logging.info(
-            f"[POINTS] Data for '{currentAccount.username}' appended to the file."
-        )
+            logging.info(f"[POINTS] Data for '{account_name}' appended to the file.")
+        except Exception as e:
+            Utils.send_notification("⚠️ Error occurred, please check the log", str(e))
+            logging.exception(f"{e.__class__.__name__}: {e}")
 
     # Save the current day's points data for the next day in the "logs" folder
     save_previous_points_data(previous_points_data)

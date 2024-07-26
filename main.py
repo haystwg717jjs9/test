@@ -55,9 +55,12 @@ def main():
             previous_points_data[account_name] = earned_points
 
             logging.info(f"[POINTS] Data for '{account_name}' appended to the file.")
-        except Exception as e:
-            Utils.send_notification("⚠️ Error occurred, please check the log", str(e))
-            logging.exception(f"{e.__class__.__name__}: {e}")
+        except Exception as e1:
+            logging.error("", exc_info=True)
+            Utils.sendNotification(
+                f"⚠️ Error executing {currentAccount.username}, please check the log",
+                f"{e1}\n{e1.__traceback__}",
+            )
 
     # Save the current day's points data for the next day in the "logs" folder
     save_previous_points_data(previous_points_data)
@@ -347,4 +350,10 @@ def save_previous_points_data(data):
 
 
 if __name__ == "__main__":
+    try:
         main()
+    except Exception as e:
+        logging.exception("")
+        Utils.sendNotification(
+            "⚠️ Error occurred, please check the log", f"{e}\n{e.__traceback__}"
+        )

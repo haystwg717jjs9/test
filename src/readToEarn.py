@@ -93,6 +93,6 @@ class ReadToEarn:
             else:
                 logging.info("[READ TO EARN] Read Article " + str(i+1))
                 balance = newbalance
-                time.sleep(random.randint(10, 20))
+                time.sleep(random.randint(100, 180))
         
         logging.info("[READ TO EARN] Completed the Read to Earn successfully !") 
